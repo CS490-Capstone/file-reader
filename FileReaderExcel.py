@@ -11,6 +11,8 @@ import math
 # importing statistics
 import statistics
 
+import sys
+
 # import workbook to create excel sheets
 from xlwt import Workbook
 
@@ -149,7 +151,7 @@ def calculateValues(dX, dY, vX, vY, pL, lineOfValues, timeValues, lastValues=[])
 # __________________________________________________________________________________________________________
 
 
-def main():
+def main(txtfiles):
     # Creating the directory that we will be putting the new files into.
     # Directory
     directory = "Excel Calculation Files"
@@ -166,10 +168,12 @@ def main():
         print("Directory '% s' created" % directory)
 
     # Create a list of all the text files in the the folder.
-    txtfiles = []
-    for file in glob.glob("*.txt"):
-        txtfiles.append(file)
-        print(file)
+    # txtfiles = []
+    # for file in glob.glob("*.txt"):
+    #     txtfiles.append(file)
+    #     print(file)
+
+    print(txtfiles)
 
     for current_file in txtfiles:
         # Get text file(s) from current directory, prepare excel file
@@ -191,7 +195,7 @@ def main():
             # 01 timestamp(ms):40440.73 force plate (fx, fy, fz, mx, my, mz):10.60986,-24.49137,17.896,-18.85504,-21.14655,0.6189079
             print("res length is ", len(res))
             print("line # is ", line)
-            
+
             # Convert each number in from our regular expression from a string back into a float.
             for index in range(len(res)):
                 # Convert the regex from string back into a float number so we can work with it.
@@ -204,7 +208,7 @@ def main():
                 # res[0] goes from number to timestamp to fx
                 timeSubList.append(timestamp)
                 # Calculate COPX and COPY beforehand and place it in the subList.
-                #print("res[3] is ", res[3], "res[4] is ", res[4], "res2 is ", res[2])
+                # print("res[3] is ", res[3], "res[4] is ", res[4], "res2 is ", res[2])
                 copx, copy = calcCop(res[3], res[4], res[2])
                 # Check for Max values
                 maxApCopX = max(maxApCopX, copx)
@@ -329,4 +333,8 @@ def main():
         wb.save(completeName)
 
 
-main()
+if __name__ == '__main__':
+    txtFiles = []
+    if (len(sys.argv) > 1):
+        txtFiles = sys.argv[1]
+    main(txtFiles)

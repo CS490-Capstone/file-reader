@@ -151,29 +151,7 @@ def calculateValues(dX, dY, vX, vY, pL, lineOfValues, timeValues, lastValues=[])
 # __________________________________________________________________________________________________________
 
 
-def main(txtfiles):
-    # Creating the directory that we will be putting the new files into.
-    # Directory
-    directory = "Excel Calculation Files"
-    # Parent Directory path
-    parent_dir = os.getcwd()
-    # Path
-    path = os.path.join(parent_dir, directory)
-    # Create the directory
-    # 'Calculation Files' in
-    # '/home / User / Documents'
-    # print(os.path.isdir(path))
-    if os.path.isdir(path) == False:
-        os.mkdir(path)
-        print("Directory '% s' created" % directory)
-
-    # Create a list of all the text files in the the folder.
-    # txtfiles = []
-    # for file in glob.glob("*.txt"):
-    #     txtfiles.append(file)
-    #     print(file)
-
-    print(txtfiles)
+def main(txtfiles: list, path: str):
 
     for current_file in txtfiles:
         # Get text file(s) from current directory, prepare excel file
@@ -335,6 +313,11 @@ def main(txtfiles):
 
 if __name__ == '__main__':
     txtFiles = []
-    if (len(sys.argv) > 1):
+    outputDir = ""
+    if (len(sys.argv) > 2):
         txtFiles = sys.argv[1]
-    main(txtFiles)
+        outputDir = sys.argv[2]
+    else:
+        print("Error, not enough arguments passed to moudle")
+        exit()
+    main(txtFiles, outputDir)

@@ -69,6 +69,7 @@ class FileSelectorApp:
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             # Update the main function call to include output directory as a parameter if needed
+            # print((self.selected_files, self.output_directory))
             module.main(self.selected_files, self.output_directory)
         else:
             print(f"Error: {module_file_path} does not exist.")

@@ -1,0 +1,9 @@
+# Ignore all .txt files
+*.txt
+# But not requirements.txt
+!requirements.txt
+
+# Ignore the outputted excel files
+*.xls
+
+/__pycache__

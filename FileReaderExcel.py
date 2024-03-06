@@ -16,6 +16,11 @@ import sys
 # import workbook to create excel sheets
 from xlwt import Workbook
 
+# Hardware IDs
+FORCEPLATE = "01"
+RAFT = "02"
+TRACKER = "03"
+
 # Define all major functions for program____________________________________________________________
 # ___________________________________________________________________________________________________
 
@@ -147,6 +152,38 @@ def calculateValues(dX, dY, vX, vY, pL, lineOfValues, timeValues, lastValues=[])
         lineOfValues)-1], lineOfValues[1][len(lineOfValues)-1], timeValues[len(timeValues)-1]]
     return dX, dY, vX, vY, pL, lastValues
 
+
+def getCurrentHWID(file):
+    """
+    Gets the current hardware IDs from the text file.
+
+    file: the file to get data from.
+
+    Returns the ID in a dictionary. 
+    """
+    with open(file, 'r') as f:
+        for line in f:
+            # The regex for the Raft sensor.
+            if re.search(r'00\s\sRaft\s=\s\d+', line):
+                print(line)
+                raft = line[-3:].rstrip()
+
+            # The regex for the Tracker sensor.
+            if re.search(r'00\s\sTracker\s=\s\d+', line):
+                print(line)
+                tracker = line[-3:].rstrip()
+
+            # The regex for the ForcePlate sensor.
+            if re.search(r'00\s\sBertecForcePlate_Recorder\s=\s\d+', line):
+                print(line)
+                forceplate = line[-3:].rstrip()
+
+    return {
+        "raft": raft,
+        "tracker": tracker,
+        "forceplate": forceplate
+    }
+
 # Define MAIN FUNCTION_____________________________________________________________________________________
 # __________________________________________________________________________________________________________
 
@@ -154,8 +191,6 @@ def calculateValues(dX, dY, vX, vY, pL, lineOfValues, timeValues, lastValues=[])
 def main(txtfiles: list, path: str):
 
     for current_file in txtfiles:
-        # Get text file(s) from current directory, prepare excel file
-        newFileName = current_file.replace('.txt', '_CalculatedFile.xls')
         # Open each text file.
         f = open(current_file, "r")
         # Read from the file line by line.
@@ -166,8 +201,18 @@ def main(txtfiles: list, path: str):
         subList = []    # Represents each set of movement data
         maxApCopX, maxMLCopY = 0, 0
 
+        oldVals = getCurrentHWID(current_file)  # the current hardware ids
+
         # Go through each of the lines and using the Regex below to parse each string
         for line in f1:
+            # Ensure every line in the file has the correct hardware ID formatting.
+            if line[0:2] == oldVals['tracker']:
+                line = line.replace(oldVals['tracker'], TRACKER)
+            elif line[0:2] == oldVals["raft"]:
+                line = line.replace(oldVals["raft"], RAFT)
+            elif line[0:2] == oldVals["forceplate"]:
+                line = line.replace(oldVals["forceplate"], FORCEPLATE)
+
             res = re.findall(r"[-+]?\d*\.\d+|\d+", line)
             # NOTE: sample line:
             # 01 timestamp(ms):40440.73 force plate (fx, fy, fz, mx, my, mz):10.60986,-24.49137,17.896,-18.85504,-21.14655,0.6189079
@@ -228,7 +273,8 @@ def main(txtfiles: list, path: str):
         asbDisplacementX = [abs(value) for value in displacementX]
         asbDisplacementY = [abs(value) for value in displacementY]
 
-        completeName = os.path.join(path, newFileName)
+        completeName = os.path.join(path, os.path.basename(
+            current_file).replace('.txt', '_CalculatedFile.xls'))
 
         wb = Workbook()
 

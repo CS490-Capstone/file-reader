@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
-import importlib.util
+import subprocess
 import os
-
+import importlib.util
 
 class FileSelectorApp:
     def __init__(self, root):
@@ -13,7 +13,6 @@ class FileSelectorApp:
 
     def initialize_ui(self):
         self.root.title("File Selector")
-        # Adjusted size to accommodate new UI elements
         self.root.geometry("400x400")
 
         self.list_frame = tk.Frame(self.root)
@@ -61,6 +60,10 @@ class FileSelectorApp:
         self.update_run_button_state()
 
     def run_selected_files(self):
+        # Execute pip command to install dependencies
+        subprocess.run(["pip", "install", "scipy", "xlwt"])
+
+        # Execute the main script if it exists
         module_name = 'FileReaderExcel'
         module_file_path = f'{module_name}.py'
         if os.path.exists(module_file_path):
@@ -68,8 +71,6 @@ class FileSelectorApp:
                 module_name, module_file_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
-            # Update the main function call to include output directory as a parameter if needed
-            # print((self.selected_files, self.output_directory))
             module.main(self.selected_files, self.output_directory)
         else:
             print(f"Error: {module_file_path} does not exist.")
@@ -79,7 +80,6 @@ class FileSelectorApp:
             self.run_button.config(state=tk.NORMAL)
         else:
             self.run_button.config(state=tk.DISABLED)
-
 
 if __name__ == "__main__":
     root = tk.Tk()

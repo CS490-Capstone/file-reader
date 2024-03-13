@@ -1,5 +1,4 @@
-# importing glob for it file handling capabilities
-import glob
+
 # import re for its regex capabilities
 import re
 # importing scipy as signal for use of its butterworth filter
